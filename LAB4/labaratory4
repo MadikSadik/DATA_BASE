@@ -1,0 +1,48 @@
+SELECT upper(airline_name) as airline_name
+from airline;
+
+select replace(airline_name, 'Air', 'Aero') as modified_airline_name
+from airline;
+
+select flight_no from flights
+where airline_id = 1
+intersect
+select flight_no from flights
+where airline_id = 2;
+
+select airport_name from airport
+where airport_name like '%Regional%'
+and airport_name like '%Air%';
+
+select first_name, to_char(date_of_birth, 'Month DD, YYYY') as formatted_birth_date
+from passengers;
+
+select flights.flight_no
+from flights
+where actual_arrival > flights.scheduled_arrival and status = 'Delayed';
+
+select first_name, case
+        when extract(year from age(date_of_birth)) between 18 and 35 then 'Young'
+        when extract(year from age(date_of_birth)) between 36 and 55 then 'Adult'
+        else 'Other'
+    end as age_group
+from passengers;
+
+select booking.passenger_id, booking.booking_platform, booking.price,
+    case
+        when price < 1000 then 'Cheap'
+        when price between 1000 and 5000 then 'Medium'
+        else 'Expensive'
+    end as price_category
+from booking;
+
+
+select airline_country,
+       count(airline_name) as airline_count
+from airline
+group by airline_country;
+
+
+select * from flights
+where actual_arrival > flights.scheduled_arrival;
+
