@@ -1,0 +1,105 @@
+alter table passengers
+add constraint check_age
+    check (extract(year from age(date_of_birth)) >= 10);
+
+alter table booking
+add constraint between_price
+check(price >= 0 and price <= 50000);
+
+delete from baggage
+    where weight_in_kg > 23;
+
+alter table baggage
+add constraint weight_between
+check(weight_in_kg >= 1 and weight_in_kg <= 23);
+
+
+
+alter table passengers
+add constraint unique_passengers unique(passport_number);
+
+alter table security_check
+add constraint unique_sec_check unique (security_check_id);
+
+alter table flights
+add constraint unique_flights unique(flight_id);
+
+alter table booking_flight
+add constraint unique_book_flight unique(booking_flight_id);
+
+alter table booking
+add constraint unique_booking unique(booking_id);
+
+alter table boarding_pass
+add constraint unique_board_pass unique(boarding_pass_id);
+
+alter table baggage_check
+add constraint unique_bag_check unique(baggage_check_id);
+
+alter table baggage
+add constraint unique_baggage unique(baggage_id);
+
+alter table airport
+add constraint unique_airport unique(airport_name);
+
+alter table airline
+add constraint unique_airline unique(airline_name);
+
+
+
+delete from security_check
+where passenger_id in (select passenger_id
+                           from passengers
+                           where (gender = 'Male' and extract(year from age(date_of_birth)) >= 18)
+                           or (gender = 'Female' and extract(year from age(date_of_birth)) >= 19)
+                           );
+
+delete from booking
+where passenger_id in (select passenger_id
+                           from passengers
+                           where (gender = 'Male' and extract(year from age(date_of_birth)) >= 18)
+                           or (gender = 'Female' and extract(year from age(date_of_birth)) >= 19)
+                           );
+
+delete from baggage_check
+where passenger_id in (select passenger_id
+                           from passengers
+                           where (gender = 'Male' and extract(year from age(date_of_birth)) >= 18)
+                           or (gender = 'Female' and extract(year from age(date_of_birth)) >= 19)
+                           );
+
+delete from passengers
+where passenger_id in (select passenger_id
+                           from passengers
+                           where (gender = 'Male' and extract(year from age(date_of_birth)) >= 18)
+                           or (gender = 'Female' and extract(year from age(date_of_birth)) >= 19)
+                           );
+
+alter table passengers
+add constraint male_female
+check(
+    (gender = 'Male' and extract(year from age(date_of_birth)) <= 18) or
+    (gender = 'Female' and extract(year from age(date_of_birth)) <= 19)
+    );
+
+
+
+
+alter table passengers
+add constraint age_restrictions
+check (country_of_citizenship = 'Kazakhstan' and extract(year from age(date_of_birth)) <= 8 or
+      (country_of_citizenship = 'France' and extract(year from age(date_of_birth)) <= 7) or
+      (country_of_citizenship not in('Kazakhstan', 'France') and extract(year from age(date_of_birth)) <= 19)
+      );
+
+
+
+alter table booking
+add column ticket_discount decimal(7,2);
+
+alter table booking
+add constraint check_ticket_discount
+check(
+    created_at >= '2024-01-01' and booking.ticket_discount = price * 0.05 or
+    created_at <= '2024-01-01' and booking.ticket_discount = price * 0.10
+);
